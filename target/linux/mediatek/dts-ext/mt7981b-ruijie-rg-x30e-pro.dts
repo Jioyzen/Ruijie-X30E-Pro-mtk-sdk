@@ -11,7 +11,7 @@
 	compatible = "ruijie,rg-x30e-pro", "mediatek,mt7981";
 
 	aliases {
-  		serial0 = &uart0;
+		serial0 = &uart0;
 		led-boot = &sysled_red;
 		led-failsafe = &sysled_red;
 		led-running = &sysled_green;
@@ -82,7 +82,7 @@
 	switch: switch@1f {
 		compatible = "mediatek,mt7531";
 		reg = <31>;
-		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
+		/* Match the verified running DTS; GPIO54 must remain available for WF_HB8. */
 		interrupt-controller;
 		#interrupt-cells = <1>;
 		interrupt-parent = <&pio>;
@@ -133,6 +133,9 @@
 &hnat {
 	mtketh-wan = "wan";
 	mtketh-lan = "lan";
+	mtketh-lan2 = "/";
+	mtketh-ppd = "eth0";
+	mtkdsa-wan-port = <0>;
 	mtketh-max-gmac = <1>;
 	status = "okay";
 };
@@ -156,7 +159,7 @@
 		spi-cal-data = /bits/ 8 <0x53 0x50 0x49 0x4E 0x41 0x4E 0x44>;
 		spi-cal-addrlen = <5>;
 		spi-cal-addr = /bits/ 32 <0x0 0x0 0x0 0x0 0x0>;
-		
+
 		mediatek,nmbm;
 		mediatek,bmt-max-ratio = <1>;
 		mediatek,bmt-max-reserved-blocks = <64>;
@@ -169,46 +172,43 @@
 			partition@0 {
 				label = "BL2";
 				reg = <0x00 0x100000>;
+				read-only;
 			};
 
 			partition@100000 {
 				label = "u-boot-env";
 				reg = <0x100000 0x80000>;
+				read-only;
 			};
 
-			partition@180000 {
+			factory: partition@180000 {
 				label = "Factory";
 				reg = <0x180000 0x200000>;
-
-				nvmem-layout {
-					compatible = "fixed-layout";
-					#address-cells = <1>;
-					#size-cells = <1>;
-
-					eeprom_factory_0: eeprom@0 {
-						reg = <0x0 0x1000>;
-					};
-				};
+				read-only;
 			};
 
 			partition@380000 {
 				label = "FIP";
 				reg = <0x380000 0x200000>;
+				read-only;
 			};
 
 			partition@580000 {
 				label = "FIP2";
 				reg = <0x580000 0x200000>;
+				read-only;
 			};
 
 			partition@780000 {
 				label = "product_info";
 				reg = <0x780000 0x80000>;
+				read-only;
 			};
 
 			partition@800000 {
 				label = "kdump";
 				reg = <0x800000 0x80000>;
+				read-only;
 			};
 
 			partition@880000 {
@@ -242,8 +242,8 @@
 
 &wifi {
 	status = "okay";
-	nvmem-cells = <&eeprom_factory_0>;
-	nvmem-cell-names = "eeprom";
+	/* Read this unit's complete calibration; SDK l1profile uses 0x5000 bytes. */
+	mediatek,mtd-eeprom = <&factory 0>;
 };
 
 &uart0 {

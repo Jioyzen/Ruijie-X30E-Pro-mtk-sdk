@@ -104,18 +104,29 @@ define Device/netcore_n60-pro-mtkuboot
 endef
 TARGET_DEVICES += netcore_n60-pro-mtkuboot
 
+define Build/x30e-pro-ubi-reserve
+	python3 $(TOPDIR)/scripts/x30e-pro-fix-ubi.py $@
+endef
+
 define Device/ruijie_rg-x30e-pro
   DEVICE_VENDOR := Ruijie
   DEVICE_MODEL := RG-X30E Pro
+  DEVICE_VARIANT := NMBM combined UBI layout (MTK SDK)
+  SUPPORTED_DEVICES := ruijie,rg-x30e-pro
+  FILESYSTEMS := squashfs
+  DEVICE_PACKAGES := kmod-mt_wifi kmod-conninfra kmod-warp kmod-mediatek_hnat \
+    wifi-dats mtwifi-cfg-ucode wireless-tools luci-app-mtwifi-cfg \
+    luci-i18n-mtwifi-cfg-zh-cn luci-app-turboacc-mtk \
+    luci-i18n-turboacc-mtk-zh-cn
   DEVICE_DTS := mt7981b-ruijie-rg-x30e-pro
   DEVICE_DTS_DIR := ../dts-ext
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048
-  IMAGE_SIZE := 114688k
+  IMAGE_SIZE := 114176k
   KERNEL_IN_UBI := 1
-  IMAGES += factory.bin
-  IMAGE/factory.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/factory.bin := append-ubi | x30e-pro-ubi-reserve | check-size $$$$(IMAGE_SIZE)
   IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
 endef
 TARGET_DEVICES += ruijie_rg-x30e-pro

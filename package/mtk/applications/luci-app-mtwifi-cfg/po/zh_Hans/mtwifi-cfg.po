@@ -34,6 +34,27 @@ msgstr "弱信号接入阈值"
 msgid "Wireless HWNAT"
 msgstr "无线硬件加速"
 
+msgid "Device Advanced Settings"
+msgstr "设备高级设置"
+
+msgid "Access Point Advanced Settings"
+msgstr "接入点高级设置"
+
+msgid "WLAN Roaming"
+msgstr "无线漫游"
+
+msgid "802.11k RRM"
+msgstr "802.11k 无线资源测量（RRM）"
+
+msgid "Enable radio resource measurement. Client support is required."
+msgstr "启用无线资源测量；终端也需要支持该功能。"
+
+msgid "Disconnect clients below this signal level in dBm; 0 disables the threshold."
+msgstr "信号低于此值（dBm）时断开终端；设为 0 可禁用此阈值。"
+
+msgid "Reject client association requests below this signal level in dBm; 0 disables the threshold."
+msgstr "拒绝信号低于此值（dBm）的接入请求；设为 0 可禁用此阈值。"
+
 msgid "Wireless configuration error"
 msgstr "无线网络设置错误"
 

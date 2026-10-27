@@ -253,7 +253,6 @@ platform_do_upgrade() {
 	huasifei,wh3000r-nand|\
 	jiorouter,ax6000-jidu6101|\
 	jiorouter,ax6000-jidu6j01|\
-	ruijie,rg-x30e-pro|\
 	zhao,7981r128)
 		CI_UBIPART="ubi"
 		nand_do_upgrade "$1"
@@ -353,6 +352,12 @@ platform_do_upgrade() {
 		CI_KERN_UBIPART=ubi_kernel
 		CI_ROOT_UBIPART=ubi
 		CI_DATA_UBIPART=ubi
+		nand_do_upgrade "$1"
+		;;
+	ruijie,rg-x30e-pro)
+		CI_UBIPART="ubi"
+		# 750 LEBs of 124 KiB; leave the UBI bad-block reserve available.
+		CI_ROOTFS_DATA_MAX=95232000
 		nand_do_upgrade "$1"
 		;;
 	*)

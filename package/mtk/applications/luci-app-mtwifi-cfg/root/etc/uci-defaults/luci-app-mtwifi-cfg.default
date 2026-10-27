@@ -4,6 +4,17 @@ if [ -d /www/luci-static/resources/view/network ]; then
 	mv -f /usr/share/luci-app-mtwifi-cfg/wireless-mtk.js /www/luci-static/resources/view/network/wireless.js
 fi
 
+# Argon's first luci.js tag determines the version query used by LuCI's
+# module loader. Include the MTK view and its translation in that version so
+# an upgrade cannot reuse a cached mac80211 view for the same LuCI revision.
+argon_header=/usr/share/ucode/luci/template/themes/argon/header.ut
+mtk_view=/www/luci-static/resources/view/network/wireless.js
+mtk_translation=/usr/lib/lua/luci/i18n/mtwifi-cfg.zh-cn.lmo
+if [ -f "$argon_header" ] && [ -f "$mtk_view" ]; then
+	cache_key=$(sha256sum "$mtk_view" "$mtk_translation" 2>/dev/null | sha256sum | cut -c 1-16)
+	sed -i -E "s|\\?v=\\{\\{ version\\.luciversion \\}\\}(-mtk-[0-9a-f]+)?|?v={{ version.luciversion }}-mtk-$cache_key|g" "$argon_header"
+fi
+
 if [ -d /usr/share/luci/menu.d ]; then
 	mv -f /usr/share/luci-app-mtwifi-cfg/luci-mod-status.json /usr/share/luci/menu.d/luci-mod-status.json
 fi

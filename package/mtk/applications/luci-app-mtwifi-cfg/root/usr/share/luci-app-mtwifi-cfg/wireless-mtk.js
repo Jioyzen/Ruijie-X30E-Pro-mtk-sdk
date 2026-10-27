@@ -951,7 +951,7 @@ return view.extend({
 
 				ss = o.subsection;
 				ss.tab('general', _('General Setup'));
-				ss.tab('advanced', _('Advanced Settings'));
+				ss.tab('advanced', _('Device Advanced Settings'));
 
 				var isDisabled = (radioNet.get('disabled') == '1' ||
 					uci.get('wireless', radioNet.getWifiDeviceName(), 'disabled') == 1);
@@ -1062,7 +1062,8 @@ return view.extend({
 				ss.tab('general', _('General Setup'));
 				ss.tab('encryption', _('Wireless Security'));
 				ss.tab('macfilter', _('MAC-Filter'));
-				ss.tab('advanced', _('Advanced Settings'));
+				ss.tab('advanced', _('Access Point Advanced Settings'));
+				ss.tab('roaming', _('WLAN Roaming'));
 
 				o = ss.taboption('general', form.ListValue, 'mode', _('Mode'));
 				if (hwtype == 'mtwifi') {
@@ -1310,26 +1311,10 @@ return view.extend({
 					o = ss.taboption('advanced', form.Flag, 'isolate', _('Isolate Clients'), _('Prevents client-to-client communication'));
 					o.depends('mode', 'ap');
 
-					o = ss.taboption('advanced', form.Flag, 'ieee80211k', _('802.11k RRM'), _('Radio Resource Measurement - Sends beacons to assist roaming. Not all clients support this.'));
-					o.default = o.enabled;
-					o.depends('mode', 'ap');
-
 					o = ss.taboption('advanced', form.Value, 'wpa_group_rekey', _('Time interval for rekeying GTK'), _('sec'));
 					o.optional    = true;
 					o.placeholder = 3600;
 					o.datatype    = 'uinteger';
-					o.depends('mode', 'ap');
-
-					o = ss.taboption('advanced', form.Value, 'kicklow', _('Kick low RSSI station threshold'), _('dBm'));
-					o.optional    = true;
-					o.placeholder = 0;
-					o.datatype = 'range(-100,0)';
-					o.depends('mode', 'ap');
-
-					o = ss.taboption('advanced', form.Value, 'assocthres', _('Station associate threshold'), _('dBm'));
-					o.optional    = true;
-					o.placeholder = 0;
-					o.datatype    = 'range(-100,0)';
 					o.depends('mode', 'ap');
 
 					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
@@ -1375,6 +1360,25 @@ return view.extend({
 					o = ss.taboption('advanced', form.Flag, 'uapsd', _('U-APSD'));
 					o.depends('mode', 'ap');
 					o.default = o.enabled;
+
+					/* The MTK cfg backend currently wires 802.11k and RSSI thresholds
+					 * into its UCI schema. Keep these controls in a dedicated tab.
+					 * Do not expose 802.11r/v here: this backend does not map them. */
+					o = ss.taboption('roaming', form.Flag, 'ieee80211k', _('802.11k RRM'), _('Enable radio resource measurement. Client support is required.'));
+					o.default = o.enabled;
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('roaming', form.Value, 'kicklow', _('Kick low RSSI station threshold'), _('Disconnect clients below this signal level in dBm; 0 disables the threshold.'));
+					o.optional = true;
+					o.placeholder = 0;
+					o.datatype = 'range(-100,0)';
+					o.depends('mode', 'ap');
+
+					o = ss.taboption('roaming', form.Value, 'assocthres', _('Station associate threshold'), _('Reject client association requests below this signal level in dBm; 0 disables the threshold.'));
+					o.optional = true;
+					o.placeholder = 0;
+					o.datatype = 'range(-100,0)';
+					o.depends('mode', 'ap');
 				}
 
 				encr = o = ss.taboption('encryption', form.ListValue, 'encryption', _('Encryption'));

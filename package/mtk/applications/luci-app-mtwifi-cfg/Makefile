@@ -7,6 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for mtwifi-cfg
+LUCI_NAME:=luci-app-mtwifi-cfg
 LUCI_DEPENDS:=+mtwifi-cfg-ucode
 LUCI_PKGARCH:=all
 
